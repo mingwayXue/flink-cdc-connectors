@@ -33,11 +33,11 @@ under the License.
     <packaging>pom</packaging>
 
     <modules>
-        <module>flink-cdc-base</module>
+        <!--<module>flink-cdc-base</module>-->
         <module>flink-connector-debezium</module>
         <module>flink-connector-test-util</module>
         <module>flink-connector-mysql-cdc</module>
-        <module>flink-connector-postgres-cdc</module>
+        <!--<module>flink-connector-postgres-cdc</module>
         <module>flink-connector-oracle-cdc</module>
         <module>flink-connector-mongodb-cdc</module>
         <module>flink-connector-oceanbase-cdc</module>
@@ -50,7 +50,7 @@ under the License.
         <module>flink-sql-connector-oceanbase-cdc</module>
         <module>flink-sql-connector-sqlserver-cdc</module>
         <module>flink-sql-connector-tidb-cdc</module>
-        <module>flink-cdc-e2e-tests</module>
+        <module>flink-cdc-e2e-tests</module>-->
     </modules>
 
     <licenses>
@@ -73,7 +73,7 @@ under the License.
     </distributionManagement>
 
     <properties>
-        <flink.version>1.13.5</flink.version>
+        <flink.version>1.14.3</flink.version>
         <debezium.version>1.5.4.Final</debezium.version>
         <tikv.version>3.2.0</tikv.version>
         <geometry.version>2.2.0</geometry.version>
@@ -135,7 +135,7 @@ under the License.
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-shaded-guava</artifactId>
-            <version>18.0-13.0</version>
+            <version>30.1.1-jre-14.0</version>
         </dependency>
 
         <!-- test dependencies -->
