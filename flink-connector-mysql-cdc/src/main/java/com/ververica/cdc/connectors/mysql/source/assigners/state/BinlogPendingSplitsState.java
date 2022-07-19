@@ -18,6 +18,10 @@
 
 package com.ververica.cdc.connectors.mysql.source.assigners.state;
 
+import com.ververica.cdc.connectors.mysql.source.assigners.AssignerStatus;
+import io.debezium.relational.TableId;
+
+import java.util.List;
 import java.util.Objects;
 
 /** A {@link PendingSplitsState} for pending binlog splits. */
@@ -25,12 +29,29 @@ public class BinlogPendingSplitsState extends PendingSplitsState {
 
     private final boolean isBinlogSplitAssigned;
 
-    public BinlogPendingSplitsState(boolean isBinlogSplitAssigned) {
+    private final List<TableId> capturedTables;
+
+    private final AssignerStatus assignerStatus;
+
+    public BinlogPendingSplitsState(
+            boolean isBinlogSplitAssigned,
+            List<TableId> capturedTables,
+            AssignerStatus assignerStatus) {
         this.isBinlogSplitAssigned = isBinlogSplitAssigned;
+        this.capturedTables = capturedTables;
+        this.assignerStatus = assignerStatus;
     }
 
     public boolean isBinlogSplitAssigned() {
         return isBinlogSplitAssigned;
+    }
+
+    public List<TableId> getCapturedTables() {
+        return capturedTables;
+    }
+
+    public AssignerStatus getAssignerStatus() {
+        return assignerStatus;
     }
 
     @Override
@@ -42,16 +63,25 @@ public class BinlogPendingSplitsState extends PendingSplitsState {
             return false;
         }
         BinlogPendingSplitsState that = (BinlogPendingSplitsState) o;
-        return isBinlogSplitAssigned == that.isBinlogSplitAssigned;
+        return isBinlogSplitAssigned == that.isBinlogSplitAssigned
+                && Objects.equals(capturedTables, that.capturedTables)
+                && Objects.equals(assignerStatus, that.assignerStatus);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(isBinlogSplitAssigned);
+        return Objects.hash(isBinlogSplitAssigned, capturedTables, assignerStatus);
     }
 
     @Override
     public String toString() {
-        return "BinlogPendingSplitsState{" + "isBinlogSplitAssigned=" + isBinlogSplitAssigned + '}';
+        return "BinlogPendingSplitsState{"
+                + "isBinlogSplitAssigned="
+                + isBinlogSplitAssigned
+                + ",capturedTables="
+                + capturedTables
+                + ",assignerStatus="
+                + assignerStatus
+                + '}';
     }
 }

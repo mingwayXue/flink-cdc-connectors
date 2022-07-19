@@ -26,6 +26,7 @@ import org.apache.flink.util.FlinkRuntimeException;
 
 import org.apache.flink.shaded.guava30.com.google.common.collect.Lists;
 
+import com.ververica.cdc.connectors.mysql.source.assigners.MySqlBinlogSplitAssigner;
 import com.ververica.cdc.connectors.mysql.source.assigners.MySqlHybridSplitAssigner;
 import com.ververica.cdc.connectors.mysql.source.assigners.MySqlSplitAssigner;
 import com.ververica.cdc.connectors.mysql.source.assigners.state.PendingSplitsState;
@@ -37,6 +38,7 @@ import com.ververica.cdc.connectors.mysql.source.events.FinishedSnapshotSplitsRe
 import com.ververica.cdc.connectors.mysql.source.events.FinishedSnapshotSplitsRequestEvent;
 import com.ververica.cdc.connectors.mysql.source.events.LatestFinishedSplitsSizeEvent;
 import com.ververica.cdc.connectors.mysql.source.events.LatestFinishedSplitsSizeRequestEvent;
+import com.ververica.cdc.connectors.mysql.source.events.ResetBinlogSplitTableSchemaEvent;
 import com.ververica.cdc.connectors.mysql.source.events.SuspendBinlogReaderAckEvent;
 import com.ververica.cdc.connectors.mysql.source.events.SuspendBinlogReaderEvent;
 import com.ververica.cdc.connectors.mysql.source.events.WakeupReaderEvent;
@@ -304,6 +306,13 @@ public class MySqlSourceEnumerator implements SplitEnumerator<MySqlSplit, Pendin
                         subtaskId,
                         new WakeupReaderEvent(WakeupReaderEvent.WakeUpTarget.SNAPSHOT_READER));
             }
+        }
+        if (splitAssigner instanceof MySqlBinlogSplitAssigner) {
+            for (int subtaskId : this.getRegisteredReader()) {
+                context.sendEventToSourceReader(subtaskId, new ResetBinlogSplitTableSchemaEvent());
+            }
+            // this finish status should be update after receive some event
+            splitAssigner.getAssignerStatus().onFinish();
         }
     }
 

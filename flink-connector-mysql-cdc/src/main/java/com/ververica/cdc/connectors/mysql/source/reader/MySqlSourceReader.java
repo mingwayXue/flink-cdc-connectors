@@ -36,6 +36,7 @@ import com.ververica.cdc.connectors.mysql.source.events.FinishedSnapshotSplitsRe
 import com.ververica.cdc.connectors.mysql.source.events.FinishedSnapshotSplitsRequestEvent;
 import com.ververica.cdc.connectors.mysql.source.events.LatestFinishedSplitsSizeEvent;
 import com.ververica.cdc.connectors.mysql.source.events.LatestFinishedSplitsSizeRequestEvent;
+import com.ververica.cdc.connectors.mysql.source.events.ResetBinlogSplitTableSchemaEvent;
 import com.ververica.cdc.connectors.mysql.source.events.SuspendBinlogReaderAckEvent;
 import com.ververica.cdc.connectors.mysql.source.events.SuspendBinlogReaderEvent;
 import com.ververica.cdc.connectors.mysql.source.events.WakeupReaderEvent;
@@ -266,8 +267,38 @@ public class MySqlSourceReader<T>
                 suspendedBinlogSplit = null;
                 this.addSplits(Collections.singletonList(binlogSplit));
             }
+        } else if (sourceEvent instanceof ResetBinlogSplitTableSchemaEvent) {
+            resetBinlogSplitTableSchemaEvent();
         } else {
             super.handleSourceEvents(sourceEvent);
+        }
+    }
+
+    private void resetBinlogSplitTableSchemaEvent() {
+        if (suspendedBinlogSplit != null) {
+            try (MySqlConnection jdbc =
+                    DebeziumUtils.createMySqlConnection(sourceConfig.getDbzConfiguration())) {
+                Map<TableId, TableChanges.TableChange> tableSchemas =
+                        TableDiscoveryUtils.discoverCapturedTableSchemas(sourceConfig, jdbc);
+
+                LOG.info(
+                        "The table schema is reset for binlog split {} success",
+                        suspendedBinlogSplit.splitId());
+                final MySqlBinlogSplit binlogSplit =
+                        new MySqlBinlogSplit(
+                                suspendedBinlogSplit.splitId(),
+                                suspendedBinlogSplit.getStartingOffset(),
+                                suspendedBinlogSplit.getEndingOffset(),
+                                suspendedBinlogSplit.getFinishedSnapshotSplitInfos(),
+                                tableSchemas,
+                                suspendedBinlogSplit.getTotalFinishedSplitSize(),
+                                false);
+                suspendedBinlogSplit = null;
+                this.addSplits(Collections.singletonList(binlogSplit));
+            } catch (SQLException e) {
+                LOG.error("Failed to obtains table schemas due to {}", e.getMessage());
+                throw new FlinkRuntimeException(e);
+            }
         }
     }
 

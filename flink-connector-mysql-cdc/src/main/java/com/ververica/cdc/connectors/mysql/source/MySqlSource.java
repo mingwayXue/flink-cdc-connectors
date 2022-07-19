@@ -189,7 +189,14 @@ public class MySqlSource<T>
                         "Failed to discover captured tables for enumerator", e);
             }
         } else {
-            splitAssigner = new MySqlBinlogSplitAssigner(sourceConfig);
+            try (JdbcConnection jdbc = openJdbcConnection(sourceConfig)) {
+                final List<TableId> capturedTables = discoverCapturedTables(jdbc, sourceConfig);
+                splitAssigner = new MySqlBinlogSplitAssigner(sourceConfig, capturedTables);
+            } catch (Exception e) {
+                throw new FlinkRuntimeException(
+                        "MySqlBinlogSplitAssigner Failed to discover captured tables for enumerator",
+                        e);
+            }
         }
 
         return new MySqlSourceEnumerator(enumContext, sourceConfig, splitAssigner);

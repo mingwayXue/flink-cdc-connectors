@@ -136,7 +136,14 @@ public class PendingSplitsStateSerializerTest {
     }
 
     private static BinlogPendingSplitsState getTestBinlogPendingSplitsState() {
-        return new BinlogPendingSplitsState(true);
+        final List<TableId> capturedTables = new ArrayList<>();
+        final TableId tableId0 = TableId.parse("test_db.test_table");
+        final TableId tableId1 = TableId.parse("test_db.test_table1");
+
+        capturedTables.add(tableId0);
+        capturedTables.add(tableId1);
+        return new BinlogPendingSplitsState(
+                true, capturedTables, AssignerStatus.INITIAL_ASSIGNING_FINISHED);
     }
 
     private static MySqlSnapshotSplit getTestSnapshotSplit(TableId tableId, int splitNo) {
