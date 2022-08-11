@@ -312,7 +312,7 @@ public class MySqlSourceEnumerator implements SplitEnumerator<MySqlSplit, Pendin
                 context.sendEventToSourceReader(subtaskId, new ResetBinlogSplitTableSchemaEvent());
             }
             // this finish status should be update after receive some event
-            splitAssigner.getAssignerStatus().onFinish();
+            splitAssigner.onFinishedSplits(null);
         }
     }
 

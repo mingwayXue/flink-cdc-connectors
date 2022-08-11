@@ -144,7 +144,9 @@ public class MySqlBinlogSplitAssigner implements MySqlSplitAssigner {
 
     @Override
     public void onFinishedSplits(Map<String, BinlogOffset> splitFinishedOffsets) {
-        // do nothing
+        // this assignerStatus should be update after receive some event
+        // splitAssigner.getAssignerStatus().onFinish();
+        assignerStatus = assignerStatus.onFinish();
     }
 
     @Override
