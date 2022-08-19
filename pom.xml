@@ -37,13 +37,13 @@ under the License.
         <module>flink-connector-debezium</module>
         <module>flink-connector-test-util</module>
         <module>flink-connector-mysql-cdc</module>
+        <module>flink-sql-connector-mysql-cdc</module>
         <!--<module>flink-connector-postgres-cdc</module>
         <module>flink-connector-oracle-cdc</module>
         <module>flink-connector-mongodb-cdc</module>
         <module>flink-connector-oceanbase-cdc</module>
         <module>flink-connector-sqlserver-cdc</module>
         <module>flink-connector-tidb-cdc</module>
-        <module>flink-sql-connector-mysql-cdc</module>
         <module>flink-sql-connector-postgres-cdc</module>
         <module>flink-sql-connector-mongodb-cdc</module>
         <module>flink-sql-connector-oracle-cdc</module>
@@ -61,7 +61,7 @@ under the License.
         </license>
     </licenses>
 
-    <distributionManagement>
+    <!--<distributionManagement>
         <snapshotRepository>
             <id>oss</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
@@ -70,7 +70,7 @@ under the License.
             <id>oss</id>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
-    </distributionManagement>
+    </distributionManagement>-->
 
     <properties>
         <flink.version>1.14.3</flink.version>
@@ -476,6 +476,18 @@ under the License.
             </plugin>
         </plugins>
     </build>
+
+    <!--heytea bigdata 私服-->
+    <distributionManagement>
+        <repository>
+            <id>heytea-bigdata</id>
+            <url>https://nexus.heyteago.com/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>heytea-bigdata</id>
+            <url>https://nexus.heyteago.com/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <profiles>
         <profile>
